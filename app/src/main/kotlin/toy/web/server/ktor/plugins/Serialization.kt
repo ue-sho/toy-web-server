@@ -1,4 +1,4 @@
-package toy.web.server.plugins
+package toy.web.server.ktor.plugins
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

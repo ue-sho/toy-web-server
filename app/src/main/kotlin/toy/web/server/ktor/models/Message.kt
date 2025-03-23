@@ -1,4 +1,4 @@
-package toy.web.server.models
+package toy.web.server.ktor.models
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package toy.web.server.plugins
+package toy.web.server.ktor.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*

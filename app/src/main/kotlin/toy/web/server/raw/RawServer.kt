@@ -103,3 +103,38 @@ class RawServer(
         )
     }
 }
+
+
+/**
+ * Starts the raw server implementation
+ */
+fun startRawServer(port: Int) {
+    println("Starting raw server on port $port")
+    val server = RawServer(port)
+
+    // Add test routes
+    server.get("/") { _ ->
+        Response.html("""
+            <html>
+                <body>
+                    <h1>Welcome to Raw Server</h1>
+                    <p>This is a simple web server implementation in Kotlin!</p>
+                    <ul>
+                        <li><a href="/hello">Say Hello</a></li>
+                        <li><a href="/static/index.html">Static Page</a></li>
+                    </ul>
+                </body>
+            </html>
+        """.trimIndent())
+    }
+
+    server.get("/hello") { request ->
+        Response.text("Hello, World!")
+    }
+
+    server.post("/echo") { request ->
+        Response.text("You sent: ${request.body}")
+    }
+
+    server.start()
+}

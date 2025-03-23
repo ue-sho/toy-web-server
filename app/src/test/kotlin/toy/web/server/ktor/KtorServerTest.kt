@@ -1,11 +1,11 @@
-package toy.web.server
+package toy.web.server.ktor
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import toy.web.server.plugins.configureMonitoring
-import toy.web.server.plugins.configureSerialization
+import toy.web.server.ktor.plugins.configureMonitoring
+import toy.web.server.ktor.plugins.configureSerialization
 import kotlin.test.*
 
 class ApplicationTest {
