@@ -11,7 +11,7 @@ import toy.web.server.raw.startRawServer
  * - Default (Ktor): ./gradlew run
  */
 fun main(args: Array<String>) {
-    val serverType = args.firstOrNull()?.lowercase() ?: "ktor"
+    val serverType = args.firstOrNull()?.lowercase() ?: "raw"
     val port = 8080
 
     when (serverType) {
