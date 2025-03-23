@@ -35,7 +35,6 @@ class Server(
      */
     fun start() {
         isRunning = true
-        println("Starting server on port $port")
 
         while (isRunning) {
             try {

@@ -66,7 +66,6 @@ class RawServer(
      * Starts the server
      */
     fun start() {
-        println("Starting raw server on port $port")
         server.start()
     }
 
