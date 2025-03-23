@@ -29,7 +29,7 @@ class Response(
     /**
      * Converts the response to a string that can be sent over the network
      */
-    fun toString(): String {
+    override fun toString(): String {
         // Add Content-Length header if body is not empty
         if (body.isNotEmpty()) {
             headers["Content-Length"] = body.length.toString()

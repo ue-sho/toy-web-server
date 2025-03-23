@@ -3,7 +3,7 @@ package toy.web.server.raw
 import toy.web.server.raw.core.Server
 import toy.web.server.raw.core.Request
 import toy.web.server.raw.core.Response
-import toy.web.server.raw.routing.Router
+import toy.web.server.raw.core.HttpStatus
 import java.io.File
 
 /**
@@ -11,14 +11,13 @@ import java.io.File
  */
 class RawServer(
     private val port: Int,
-    private val staticDir: String = "static"
+    private val staticDir: String = "app/src/main/resources/static"
 ) {
     private val server = Server(port)
-    private val router = Router()
 
     init {
         // Set up static file serving
-        router.get("/static/*") { request ->
+        server.get("/static/*") { request ->
             serveStaticFile(request.path.removePrefix("/static/"))
         }
     }
@@ -27,14 +26,14 @@ class RawServer(
      * Adds a GET route
      */
     fun get(path: String, handler: (Request) -> Response) {
-        router.get(path, handler)
+        server.get(path, handler)
     }
 
     /**
      * Adds a POST route
      */
     fun post(path: String, handler: (Request) -> Response) {
-        router.post(path, handler)
+        server.post(path, handler)
     }
 
     /**
@@ -70,34 +69,4 @@ class RawServer(
             body = file.readText()
         )
     }
-}
-
-/**
- * Example usage:
- */
-fun main() {
-    val server = RawServer(8080)
-
-    // Add some routes
-    server.get("/") { _ ->
-        Response.html("""
-            <html>
-                <body>
-                    <h1>Welcome to Raw Server</h1>
-                    <p>This is a simple web server implementation in Kotlin!</p>
-                </body>
-            </html>
-        """.trimIndent())
-    }
-
-    server.get("/hello") { request ->
-        Response.text("Hello, World!")
-    }
-
-    server.post("/echo") { request ->
-        Response.text("You sent: ${request.body}")
-    }
-
-    // Start the server
-    server.start()
 }
