@@ -1,5 +1,7 @@
 package toy.web.server.raw.core
 
+import java.io.File
+
 /**
  * Represents an HTTP status code and its description
  */
@@ -49,33 +51,41 @@ class Response(
         /**
          * Creates a simple text response
          */
-        fun text(content: String, status: HttpStatus = HttpStatus.OK): Response {
+        fun text(body: String, status: HttpStatus = HttpStatus.OK): Response {
             return Response(
-                status = status,
-                headers = mutableMapOf("Content-Type" to "text/plain; charset=utf-8"),
-                body = content
+                headers = mutableMapOf("Content-Type" to "text/plain"),
+                body = body,
+                status = status
             )
         }
 
         /**
          * Creates a simple HTML response
          */
-        fun html(content: String, status: HttpStatus = HttpStatus.OK): Response {
+        fun html(body: String, status: HttpStatus = HttpStatus.OK): Response {
             return Response(
-                status = status,
-                headers = mutableMapOf("Content-Type" to "text/html; charset=utf-8"),
-                body = content
+                headers = mutableMapOf("Content-Type" to "text/html"),
+                body = body,
+                status = status
             )
         }
 
         /**
          * Creates a JSON response
          */
-        fun json(content: String, status: HttpStatus = HttpStatus.OK): Response {
+        fun json(body: String, status: HttpStatus = HttpStatus.OK): Response {
             return Response(
-                status = status,
-                headers = mutableMapOf("Content-Type" to "application/json; charset=utf-8"),
-                body = content
+                headers = mutableMapOf("Content-Type" to "application/json"),
+                body = body,
+                status = status
+            )
+        }
+
+        fun file(file: File, contentType: String): Response {
+            return Response(
+                headers = mutableMapOf("Content-Type" to contentType),
+                body = file.readText(),
+                status = HttpStatus.OK
             )
         }
     }

@@ -6,14 +6,12 @@ import toy.web.server.raw.core.Response
 import toy.web.server.raw.core.HttpStatus
 import toy.web.server.raw.models.Message
 import java.io.File
+import java.nio.file.Paths
 
 /**
  * Main server class that combines HTTP server functionality with routing
  */
-class RawServer(
-    private val port: Int,
-    private val staticDir: String = "app/src/main/resources/static"
-) {
+class RawServer(port: Int, private val staticDir: String = "static") {
     private val server = Server(port)
 
     init {
@@ -22,8 +20,8 @@ class RawServer(
             serveStaticFile(request.path.removePrefix("/static/"))
         }
 
-        // Set up API routes
         setupApiRoutes()
+        setupDefaultRoutes()
     }
 
     private fun setupApiRoutes() {
@@ -48,17 +46,43 @@ class RawServer(
         }
     }
 
+    private fun setupDefaultRoutes() {
+        // Add test routes
+        server.get("/") { _ ->
+            Response.html("""
+                <html>
+                    <body>
+                        <h1>Welcome to Raw Server</h1>
+                        <p>This is a simple web server implementation in Kotlin!</p>
+                        <ul>
+                            <li><a href="/hello">Say Hello</a></li>
+                            <li><a href="/static/index.html">Static Page</a></li>
+                        </ul>
+                    </body>
+                </html>
+            """.trimIndent())
+        }
+
+        server.get("/hello") { request ->
+            Response.text("Hello, World!")
+        }
+
+        server.post("/echo") { request ->
+            Response.text("You sent: ${request.body}")
+        }
+    }
+
     /**
      * Adds a GET route
      */
-    fun get(path: String, handler: (Request) -> Response) {
+    fun get(path: String, handler: (request: Request) -> Response) {
         server.get(path, handler)
     }
 
     /**
      * Adds a POST route
      */
-    fun post(path: String, handler: (Request) -> Response) {
+    fun post(path: String, handler: (request: Request) -> Response) {
         server.post(path, handler)
     }
 
@@ -66,7 +90,6 @@ class RawServer(
      * Starts the server
      */
     fun start() {
-        println("Starting raw server on port $port")
         server.start()
     }
 
@@ -81,25 +104,22 @@ class RawServer(
      * Serves a static file from the static directory
      */
     private fun serveStaticFile(path: String): Response {
-        val file = File(staticDir, path)
+        val filePath = Paths.get(staticDir, path).normalize()
+        val file = File(filePath.toString())
 
-        if (!file.exists() || !file.isFile) {
-            return Response.text("404 Not Found", HttpStatus.NOT_FOUND)
+        if (!file.exists() || !file.isFile || !file.canonicalPath.startsWith(File(staticDir).canonicalPath)) {
+            return Response.text("404: File not found", HttpStatus.NOT_FOUND)
         }
 
         val contentType = when (file.extension.lowercase()) {
             "html" -> "text/html"
             "css" -> "text/css"
             "js" -> "application/javascript"
-            "json" -> "application/json"
             "png" -> "image/png"
             "jpg", "jpeg" -> "image/jpeg"
             else -> "application/octet-stream"
         }
 
-        return Response(
-            headers = mutableMapOf("Content-Type" to contentType),
-            body = file.readText()
-        )
+        return Response.file(file, contentType)
     }
 }
