@@ -143,7 +143,11 @@ class Server(
      */
     fun stop() {
         isRunning = false
+        try {
+            serverSocket.close()
+        } catch (e: Exception) {
+            println("Error closing server socket: ${e.message}")
+        }
         executor.shutdown()
-        serverSocket.close()
     }
 }

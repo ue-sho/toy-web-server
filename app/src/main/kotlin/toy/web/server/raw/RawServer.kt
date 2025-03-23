@@ -4,6 +4,7 @@ import toy.web.server.raw.core.Server
 import toy.web.server.raw.core.Request
 import toy.web.server.raw.core.Response
 import toy.web.server.raw.core.HttpStatus
+import toy.web.server.raw.models.Message
 import java.io.File
 
 /**
@@ -19,6 +20,31 @@ class RawServer(
         // Set up static file serving
         server.get("/static/*") { request ->
             serveStaticFile(request.path.removePrefix("/static/"))
+        }
+
+        // Set up API routes
+        setupApiRoutes()
+    }
+
+    private fun setupApiRoutes() {
+        // Health check endpoint
+        server.get("/api/health") { _ ->
+            Response.text("OK", HttpStatus.OK)
+        }
+
+        // Messages endpoints
+        server.get("/api/messages") { _ ->
+            val message = Message("Hello from the server!")
+            Response.json(Message.toJson(message))
+        }
+
+        server.post("/api/messages") { request ->
+            try {
+                val message = Message.fromJson(request.body)
+                Response.json(Message.toJson(message), HttpStatus.CREATED)
+            } catch (e: Exception) {
+                Response.text("Invalid request body: ${e.message}", HttpStatus.BAD_REQUEST)
+            }
         }
     }
 
@@ -42,6 +68,13 @@ class RawServer(
     fun start() {
         println("Starting raw server on port $port")
         server.start()
+    }
+
+    /**
+     * Stops the server
+     */
+    fun stop() {
+        server.stop()
     }
 
     /**
